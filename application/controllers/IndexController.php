@@ -1,30 +1,31 @@
 <?php
 
-class Site_IdentificacaoController extends App_Controller_Site
+class IndexController extends Zend_Controller_Action
 {
+
+    public function indexAction()
+    {
+    }
+
     public function loginGoogleAction()
     {
         try {
+            $googleOAuth2 = APPLICATION_PATH . '/../application/configs/google-o-auth2.json';
+
             $session = new Zend_Session_Namespace('access_token');
 
+            $client = new Google_Client();
+            $client->setAuthConfigFile($googleOAuth2);
+            $client->setAccessType("online");
+            $client->setApplicationName("");
+            $client->addScope("https://www.googleapis.com/auth/userinfo.email");
+
+            $session->access_token = $client->getAccessToken();
             if (isset($session->access_token) && $session->access_token) {
-                return $this->forward('retorno-google-o-auth2', 'identificacao', 'site');
+                $client->setAccessToken($session->access_token);
             } else {
-                $googleOAuth2 = APPLICATION_PATH . '/../application/configs/google-o-auth2.json';
-
-                $client = new Google_Client();
-                $client->setAuthConfigFile($googleOAuth2);
-                $client->setAccessType("online");
-                $client->setApplicationName("");
-                $client->addScope("https://www.googleapis.com/auth/userinfo.email");
-
-                $session->access_token = $client->getAccessToken();
-                if (isset($session->access_token) && $session->access_token) {
-                    $client->setAccessToken($session->access_token);
-                } else {
-                    $authUrl = $client->createAuthUrl();
-                    header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
-                }
+                $authUrl = $client->createAuthUrl();
+                header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
             }
         } catch (App_Exception $e) {
             $this->setErrorMessage("Erro ao autenticar com o Google", array($e->getErrorMessage()));
@@ -60,7 +61,6 @@ class Site_IdentificacaoController extends App_Controller_Site
             if ($client->getAccessToken()) {
                 $oUserInfo = $objOAuthService->userinfo->get();
                 if (!empty($oUserInfo) && $oUserInfo->verifiedEmail) {
-                    //$oUserInfo->givenName
                     $url = 'identificacao/espaco';
 
                     $request = Zend_Controller_Front::getInstance()->getRequest();
@@ -78,4 +78,7 @@ class Site_IdentificacaoController extends App_Controller_Site
         }
         exit;
     }
+
+
 }
+
