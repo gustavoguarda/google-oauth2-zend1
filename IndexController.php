@@ -15,7 +15,7 @@ class Site_IdentificacaoController extends App_Controller_Site
                 $client = new Google_Client();
                 $client->setAuthConfigFile($googleOAuth2);
                 $client->setAccessType("online");
-                $client->setApplicationName("Gran Cursos Online");
+                $client->setApplicationName("");
                 $client->addScope("https://www.googleapis.com/auth/userinfo.email");
 
                 $session->access_token = $client->getAccessToken();
@@ -42,7 +42,7 @@ class Site_IdentificacaoController extends App_Controller_Site
             $client = new Google_Client();
             $client->setAuthConfigFile($googleOAuth2);
             $client->setAccessType("online");
-            $client->setApplicationName("Gran Cursos Online");
+            $client->setApplicationName("");
             $client->addScope("https://www.googleapis.com/auth/userinfo.email");
 
             if (isset($_GET['code'])) {
@@ -60,29 +60,8 @@ class Site_IdentificacaoController extends App_Controller_Site
             if ($client->getAccessToken()) {
                 $oUserInfo = $objOAuthService->userinfo->get();
                 if (!empty($oUserInfo) && $oUserInfo->verifiedEmail) {
-                    // Tratamos o nome e sobrenome para o nosso padrão
-                    $aNome     = explode(" ", $oUserInfo->givenName);
-                    $nome      = $aNome[0];
-                    $sobrenome = $aNome[1] . ' ' . $oUserInfo->familyName;
-
-                    $mAluno = new Model_DbTable_Sigue_Aluno();
-                    $rAluno = $mAluno->fetchRowByEmail($oUserInfo->email);
-
-                    if (is_null($rAluno)) {
-                        $idAluno = $mAluno->salvar(array(
-                            'Nome'      => $nome,
-                            'Sobrenome' => $sobrenome,
-                            'Email'     => $oUserInfo->email,
-                            'Sexo'      => trim(ucfirst(substr($oUserInfo->gender, 0, 1))),
-                            'senhaMd5'  => md5(App_Function::getRandomString())
-                        ));
-                    }
-
-                    $user = $mAluno->autenticar(
-                        $rAluno->Email, $rAluno->senhaMd5, false
-                    );
-
-                    $url = 'aluno/espaco';
+                    //$oUserInfo->givenName
+                    $url = 'identificacao/espaco';
 
                     $request = Zend_Controller_Front::getInstance()->getRequest();
                     $baseUrl = $request->getScheme() . '://' . $request->getHttpHost() . rtrim($request->getBaseUrl(), '/');
