@@ -39,3 +39,7 @@ $ composer update
 ```
 
 That's it! You should now have everything needed to use the **Google OAuth with Zend 1**.
+
+
+## Reference
+[https://developers.google.com/oauthplayground](https://developers.google.com/oauthplayground)
