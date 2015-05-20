@@ -19,6 +19,7 @@ class IndexController extends Zend_Controller_Action
             $client->setAccessType("online");
             $client->setApplicationName("");
             $client->addScope("https://www.googleapis.com/auth/userinfo.email");
+            $client->addScope("https://www.googleapis.com/auth/userinfo.profile");
 
             $session->access_token = $client->getAccessToken();
             if (isset($session->access_token) && $session->access_token) {
@@ -27,9 +28,9 @@ class IndexController extends Zend_Controller_Action
                 $authUrl = $client->createAuthUrl();
                 header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
             }
-        } catch (App_Exception $e) {
-            $this->setErrorMessage("Erro ao autenticar com o Google", array($e->getErrorMessage()));
-            $this->redirect('identificacao', 'index', 'site');
+        } catch (Zend_Exception $e) {
+            $this->_helper->flashMessenger->addMessage("Erro ao autenticar com o Google " . array($e->getErrorMessage()));
+            $this->redirect('identificacao/index/');
         }
         exit();
     }
@@ -44,7 +45,6 @@ class IndexController extends Zend_Controller_Action
             $client->setAuthConfigFile($googleOAuth2);
             $client->setAccessType("online");
             $client->setApplicationName("");
-            $client->addScope("https://www.googleapis.com/auth/userinfo.email");
 
             if (isset($_GET['code'])) {
                 $client->authenticate($_GET['code']);
@@ -72,9 +72,9 @@ class IndexController extends Zend_Controller_Action
                 $authUrl = $client->createAuthUrl();
                 header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
             }
-        } catch (App_Exception $e) {
-            $this->setErrorMessage("Erro ao autenticar com o Google", array($e->getErrorMessage()));
-            $this->redirect('identificacao', 'index', 'site');
+        } catch (Zend_Exception $e) {
+            $this->_helper->flashMessenger->addMessage("Erro ao autenticar com o Google " . array($e->getErrorMessage()));
+            $this->redirect('identificacao/index/');
         }
         exit;
     }
