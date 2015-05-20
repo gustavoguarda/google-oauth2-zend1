@@ -9,6 +9,8 @@ class IndexController extends Zend_Controller_Action
 
     public function loginGoogleAction()
     {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
         try {
             $googleOAuth2 = APPLICATION_PATH . '/../application/configs/google-o-auth2.json';
 
@@ -22,7 +24,7 @@ class IndexController extends Zend_Controller_Action
             $client->addScope("https://www.googleapis.com/auth/userinfo.profile");
 
             $session->access_token = $client->getAccessToken();
-            if (isset($session->access_token) && $session->access_token) {
+            if (!empty($session->access_token)) {
                 $client->setAccessToken($session->access_token);
             } else {
                 $authUrl = $client->createAuthUrl();
@@ -32,11 +34,12 @@ class IndexController extends Zend_Controller_Action
             $this->_helper->flashMessenger->addMessage("Erro ao autenticar com o Google " . array($e->getErrorMessage()));
             $this->redirect('identificacao/index/');
         }
-        exit();
     }
 
     public function retornoGoogleOAuth2Action()
     {
+        $this->_helper->layout()->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
         try {
             $session = new Zend_Session_Namespace('access_token');
 
@@ -51,7 +54,7 @@ class IndexController extends Zend_Controller_Action
                 $session->access_token = $client->getAccessToken();
             }
 
-            if (isset($session->access_token) && $session->access_token) {
+            if (!empty($session->access_token)) {
                 $client->setAccessToken($session->access_token);
             }
 
@@ -76,9 +79,6 @@ class IndexController extends Zend_Controller_Action
             $this->_helper->flashMessenger->addMessage("Erro ao autenticar com o Google " . array($e->getErrorMessage()));
             $this->redirect('identificacao/index/');
         }
-        exit;
     }
-
-
 }
 
