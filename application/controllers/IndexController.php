@@ -30,7 +30,7 @@ class IndexController extends Zend_Controller_Action
                 $authUrl = $client->createAuthUrl();
                 header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
             }
-        } catch (Zend_Exception $e) {
+        } catch (Google_Exception $e) {
             $this->_helper->flashMessenger->addMessage("Erro ao autenticar com o Google " . array($e->getErrorMessage()));
             $this->redirect('identificacao/index/');
         }
@@ -48,6 +48,8 @@ class IndexController extends Zend_Controller_Action
             $client->setAuthConfigFile($googleOAuth2);
             $client->setAccessType("online");
             $client->setApplicationName("");
+            $client->addScope("https://www.googleapis.com/auth/userinfo.email");
+            $client->addScope("https://www.googleapis.com/auth/userinfo.profile");
 
             if (isset($_GET['code'])) {
                 $client->authenticate($_GET['code']);
@@ -75,7 +77,7 @@ class IndexController extends Zend_Controller_Action
                 $authUrl = $client->createAuthUrl();
                 header('Location: ' . filter_var($authUrl, FILTER_SANITIZE_URL));
             }
-        } catch (Zend_Exception $e) {
+        } catch (Google_Exception $e) {
             $this->_helper->flashMessenger->addMessage("Erro ao autenticar com o Google " . array($e->getErrorMessage()));
             $this->redirect('identificacao/index/');
         }
